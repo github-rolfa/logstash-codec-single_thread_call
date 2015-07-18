@@ -1,16 +1,4 @@
-require 'bundler'
-
-class Event
-
-  def initialize(data)
-    @data = data
-  end
-
-  def [] (fieldref)
-    @data[fieldref]
-  end
-
-end
+require "logstash/codecs/base"
 
 class Aggregator
 
@@ -34,14 +22,14 @@ class Aggregator
         # return all lines we have for the call and empty lines
         message = lines.join(@separator)
         lines.clear
-        yield Event.new({"message" => message})
+        yield LogStash::Event.new({"message" => message})
       elsif data.match(@start_expr) # is this the start of a call
         # if we have a new start but the lines where not empty (remember we just added the current line)
         if lines.size > 1
           message = lines[0..-2].join(@separator)
           lines.clear
           lines.push(data) # readd the current line
-          yield Event.new({"message" => message})
+          yield LogStash::Event.new({"message" => message})
         end
       end
     end
